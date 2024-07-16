@@ -1,0 +1,23 @@
+services:
+  majid-ebank-discovery-service:
+    build: ./discovery-service
+    container_name: majid-ebank-discovery-service
+    ports:
+      - '8761:8761'
+    expose:
+      - '8761'
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8761/actuator/health"]
+      interval: 10s
+  majid-ebank-config-service:
+    build: ./config-service
+    container_name: majid-ebank-config-service
+    ports:
+      - '9999:9999'
+    expose:
+      - '9999'
+    environment:
+      - DISCOVERY_SERVICE_URL=http://majid-ebank-discovery-service:8761/eureka
+    depends_on:
+      majid-ebank-discovery-service:
+        condition: service_healthy
